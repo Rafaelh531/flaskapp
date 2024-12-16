@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 
 app = Flask(__name__)  # Cria a aplicação Flask
-
+#teste 
 @app.route('/')  # Define a rota principal ("/")
 def home():
     return render_template('ignorar.html')  # Retorna uma mensagem simples
