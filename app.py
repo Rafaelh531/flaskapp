@@ -16,8 +16,9 @@ def get_db_connection():
 def home():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute('SELECT * FROM armadilha')
-    armadilhas = cur.fetchall()
+    cur.execute('SELECT * FROM armadilhas')
+    columns = [desc[0] for desc in cur.description]
+    armadilhas = [dict(zip(columns, row)) for row in cur.fetchall()]
     cur.close()
     conn.close()
     return render_template('ignorar.html', armadilhas=armadilhas)  # Passa os dados para o template

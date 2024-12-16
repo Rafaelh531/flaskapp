@@ -18,6 +18,9 @@ def populate_database(host, database, user, password, table_name, num_records):
         conn = psycopg2.connect(host=host, database=database, user=user, password=password)
         cursor = conn.cursor()
 
+        # Deletar todos os dados da tabela
+        cursor.execute(f"TRUNCATE TABLE {table_name} RESTART IDENTITY")
+
         # Gerar e inserir registros aleatórios
         for record_id in range(1, num_records + 1):
             latitude = random.uniform(-25.5852, -25.4521)  # Faixa aproximada de latitude para Foz do Iguaçu
@@ -40,4 +43,4 @@ def populate_database(host, database, user, password, table_name, num_records):
             conn.close()
 
 # Exemplo de uso:
-populate_database('dpg-ctg5u0hopnds73dllme0-a.oregon-postgres.render.com', 'mosquitodb', "mosquitodb_user", 'j5uG5nEkVlPhEIIaG4ggrVavmBM2oNyz', 'armadilhas', 5)
+populate_database('dpg-ctg5u0hopnds73dllme0-a.oregon-postgres.render.com', 'mosquitodb', "mosquitodb_user", 'j5uG5nEkVlPhEIIaG4ggrVavmBM2oNyz', 'armadilhas', 50)

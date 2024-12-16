@@ -18,20 +18,26 @@
 </head>
 <body>
     <div id="map"></div>
-    <div id="info"></div>
+    <!-- <div id="info"></div>
         <h2>Informações das Armadilhas</h2>
         <ul>
             {% for armadilha in armadilhas %}
                 <li>{{ armadilha }}</li>
             {% endfor %}
         </ul>
-    </div>
+    </div> -->
     <script>
         var map = L.map('map').setView([-25.5469, -54.5882], 13);
 
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
             maxZoom: 19
         }).addTo(map);
+    var armadilhas = {{ armadilhas|tojson|safe }};
+    armadilhas.forEach(function(armadilha) {
+        console.log(armadilhas);
+        L.marker([armadilha.latitude, armadilha.longitude]).addTo(map)
+            .bindPopup('Armadilha: ' + armadilha.nome);
+    });
     </script>
 </body>
 </html>
