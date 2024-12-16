@@ -18,6 +18,14 @@
 </head>
 <body>
     <div id="map"></div>
+    <div id="info"></div>
+        <h2>Informações das Armadilhas</h2>
+        <ul>
+            {% for armadilha in armadilhas %}
+                <li>{{ armadilha }}</li>
+            {% endfor %}
+        </ul>
+    </div>
     <script>
         var map = L.map('map').setView([-25.5469, -54.5882], 13);
 
