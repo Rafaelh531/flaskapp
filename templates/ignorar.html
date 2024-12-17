@@ -5,6 +5,7 @@
     <title>Mapa Simples</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
     <style>
         html,
         body {
@@ -22,29 +23,59 @@
 
 <body>
     <div id="map"></div>
-    <!-- <div id="info"></div>
-        <h2>Informações das Armadilhas</h2>
-        <ul>
-            {% for armadilha in armadilhas %}
-                <li>{{ armadilha }}</li>
-            {% endfor %}
-        </ul>
-    </div> -->
-    <script >
+
+    <script>
+        // Inicializa o mapa
         var map = L.map('map').setView([-25.5469, -54.5882], 13);
 
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
             maxZoom: 19
         }).addTo(map);
-        var armadilhas = {{ armadilhas| tojson | safe }};
-        armadilhas.forEach(function (armadilha) {
-            console.log(armadilhas);
-            L.marker([armadilha.latitude, armadilha.longitude]).addTo(map)
-                .bindPopup('Armadilha: ' + armadilha.nome);
-        });
-       
-    </script>
 
+        // Conexão com o servidor WebSocket (Socket.IO)
+        var socket = io.connect("http://" + document.domain + ":" + location.port);
+
+        console.log("Conectando ao servidor...");
+
+        // Objeto para armazenar marcadores existentes no mapa
+        var marcadores = {armadilhas};
+
+        // Atualiza os marcadores com novos dados do servidor
+        function atualizarMapa(dados) {
+            // Itera sobre os dados recebidos
+            dados.forEach(function (armadilha) {
+                var key = armadilha.nome; // Usa o nome da armadilha como chave
+
+                // Verifica se o marcador já existe
+                if (marcadores[key]) {
+                    // Atualiza a posição do marcador existente
+                    marcadores[key].setLatLng([armadilha.latitude, armadilha.longitude]);
+                } else {
+                    // Cria um novo marcador no mapa
+                    var marcador = L.marker([armadilha.latitude, armadilha.longitude]).addTo(map)
+                        .bindPopup('Armadilha: ' + armadilha.nome);
+
+                    // Armazena o marcador
+                    marcadores[key] = marcador;
+                }
+            });
+        }
+
+        // Recebe os dados iniciais do backend
+        var armadilhas = {{ armadilhas| tojson | safe }};
+        console.log(armadilhas);
+        atualizarMapa(armadilhas);
+
+        // Evento para receber dados em tempo real
+        socket.on('nova_dados', function (data) {
+            console.log("Novos dados recebidos:", data);
+            atualizarMapa(data);
+        });
+
+        socket.on('connect', function () {
+            console.log("Conectado ao servidor Socket.IO!");
+        });
+    </script>
 </body>
 
 </html>
