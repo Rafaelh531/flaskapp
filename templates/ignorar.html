@@ -1,21 +1,26 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Mapa Simples</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script> <!-- SocketIO -->
     <style>
-        html, body {
+        html,
+        body {
             height: 100%;
             margin: 0;
             padding: 0;
         }
+
         #map {
             height: 100%;
             width: 100%;
         }
     </style>
 </head>
+
 <body>
     <div id="map"></div>
     <!-- <div id="info"></div>
@@ -32,12 +37,38 @@
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
             maxZoom: 19
         }).addTo(map);
-    var armadilhas = {{ armadilhas|tojson|safe }};
-    armadilhas.forEach(function(armadilha) {
-        console.log(armadilhas);
-        L.marker([armadilha.latitude, armadilha.longitude]).addTo(map)
-            .bindPopup('Armadilha: ' + armadilha.nome);
-    });
+        var armadilhas = {{ armadilhas| tojson | safe }};
+        armadilhas.forEach(function (armadilha) {
+            console.log(armadilhas);
+            L.marker([armadilha.latitude, armadilha.longitude]).addTo(map)
+                .bindPopup('Armadilha: ' + armadilha.nome);
+        });
+        var socket = io('http://127.0.0.1:5000'); // Inicializa o cliente SocketIO
+
+
+        // Verifica se a conexão foi estabelecida
+        socket.on('connect', function () {
+            console.log("Conectado ao servidor Socket.IO!");
+        });
+        socket.on('connect_error', function (error) {
+            console.error("Erro na conexão Socket.IO:", error);
+        });
+
+        // Quando novos dados forem recebidos, atualize o mapa
+        console.log("Esperando evento nova_dados...");
+        socket.on('nova_dados', function (message) {
+            console.log("Novos dados recebidos:", message);
+
+            // Aqui você adiciona ou atualiza os pontos no mapa
+            const newPoint = message.data;
+            L.circleMarker([newPoint.latitude, newPoint.longitude], {
+                radius: newPoint.infestacao * 2,
+                color: 'red'
+            }).addTo(map)
+                .bindPopup('Armadilha: ' + newPoint.nome);
+        });
     </script>
+
 </body>
+
 </html>

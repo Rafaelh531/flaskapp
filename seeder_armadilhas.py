@@ -43,4 +43,7 @@ def populate_database(host, database, user, password, table_name, num_records):
             conn.close()
 
 # Exemplo de uso:
-populate_database('dpg-ctg5u0hopnds73dllme0-a.oregon-postgres.render.com', 'mosquitodb', "mosquitodb_user", 'j5uG5nEkVlPhEIIaG4ggrVavmBM2oNyz', 'armadilhas', 50)
+populate_database('dpg-ctg5u0hopnds73dllme0-a.oregon-postgres.render.com', 'mosquitodb', "mosquitodb_user", 'j5uG5nEkVlPhEIIaG4ggrVavmBM2oNyz', 'armadilhas', 4)
+
+
+
